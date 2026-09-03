@@ -1,6 +1,12 @@
 venv/
+.venv/
 .env
 *.pyc
 __pycache__/
 *.log
 .DS_Store
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
