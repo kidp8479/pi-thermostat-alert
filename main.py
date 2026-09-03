@@ -67,17 +67,19 @@ class TemperatureMonitor:
 
     def run(self):
         """Main loop: check temperatures at regular intervals"""
-        logger.info("Temperature monitor started")
+        logger.info("Temperature monitor started (interval=%ss)", CHECK_INTERVAL)
 
         try:
             while True:
-                self.check_temperatures()
+                try:
+                    self.check_temperatures()
+                except Exception:
+                    # A single failed cycle (network blip, bad sensor read)
+                    # must not kill a long-running monitor - log and retry.
+                    logger.exception("Check cycle failed, retrying next interval")
                 time.sleep(CHECK_INTERVAL)
-
         except KeyboardInterrupt:
             logger.info("Monitor stopped")
-        except Exception as e:
-            logger.error(f"Error: {e}")
         finally:
             self.sensor.cleanup()
 
