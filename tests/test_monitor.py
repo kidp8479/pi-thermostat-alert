@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+import main
 from main import TemperatureMonitor
 
 
@@ -74,3 +75,27 @@ def test_re_alerts_when_state_flips(alerter):
 
     assert monitor.last_state == "open"
     assert alerter.send_alert.call_count == 2
+
+
+def test_deadband_holds_state_through_small_oscillation(alerter, monkeypatch):
+    monkeypatch.setattr(main, "ALERT_MARGIN_C", 0.5)
+    monitor = build_monitor(alerter, indoor=24.0, outdoor=27.0)
+    monitor.check_temperatures()  # close
+
+    # Outdoor now wobbles within +/-0.5°C of indoor across several checks.
+    for outdoor in (24.2, 23.8, 24.1, 23.9):
+        set_outdoor(monitor, outdoor)
+        monitor.check_temperatures()
+
+    assert monitor.last_state == "close"
+    alerter.send_alert.assert_called_once()
+
+
+def test_no_alert_before_the_margin_is_cleared(alerter, monkeypatch):
+    monkeypatch.setattr(main, "ALERT_MARGIN_C", 0.5)
+    monitor = build_monitor(alerter, indoor=24.0, outdoor=24.3)  # +0.3, inside deadband
+
+    monitor.check_temperatures()
+
+    assert monitor.last_state is None
+    alerter.send_alert.assert_not_called()

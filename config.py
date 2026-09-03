@@ -16,6 +16,11 @@ def _env_int(name, default):
     return int(raw) if raw else default
 
 
+def _env_float(name, default):
+    raw = os.getenv(name)
+    return float(raw) if raw else default
+
+
 # Sensor
 USE_MOCK_SENSOR = _env_bool("USE_MOCK_SENSOR", False)
 DHT22_PIN = os.getenv("DHT22_PIN", "D17")  # Blinka board pin name (GPIO17)
@@ -23,6 +28,11 @@ SENSOR_SETTLE_SECONDS = 2.0  # DHT22 needs ~2s between reads
 
 # Monitor loop
 CHECK_INTERVAL = _env_int("CHECK_INTERVAL", 600)
+
+# Alerting deadband: the indoor/outdoor gap must exceed this many °C before the
+# alert state flips. Between -margin and +margin the state is held, so a
+# temperature hovering around the crossover cannot flip open<->close every check.
+ALERT_MARGIN_C = _env_float("ALERT_MARGIN_C", 0.5)
 
 # OpenWeatherMap
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
