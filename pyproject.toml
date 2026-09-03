@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pi-thermostat-alert"
+version = "1.0.0"
+description = "Raspberry Pi indoor/outdoor temperature monitor with Discord alerts"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31.0,<3",
+    "python-dotenv>=1.0.0,<2",
+]
+
+[project.optional-dependencies]
+# Hardware stack: only needed on the Pi (imported lazily at runtime), and it
+# does not build on an x86 CI runner - keep it out of `dev`.
+pi = [
+    "adafruit-circuitpython-dht>=4.0.0,<5",
+    "lgpio>=0.2.0",
+]
+dev = [
+    "ruff>=0.6.0,<1",
+    "pytest>=8.0.0",
+]
+
+[tool.setuptools]
+py-modules = ["main", "config", "sensors", "weather", "alerter"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
