@@ -11,7 +11,7 @@ pi-thermostat-alert/
 ├── weather.py
 ├── alerter.py
 ├── main.py
-├── requirements.txt
+├── pyproject.toml
 ├── .env
 └── .env.example
 ```
@@ -22,16 +22,16 @@ On the RPi:
 
 ```bash
 cd pi-thermostat-alert
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+sudo apt install libgpiod2            # system dep for the GPIO stack
+python3 -m venv .venv
+source .venv/bin/activate
+pip install ".[pi]"                   # includes the DHT22 + lgpio libraries
 ```
 
-System dependencies (Raspberry Pi only):
+On a dev machine (no hardware), use the dev extra instead:
 
 ```bash
-sudo apt install libgpiod2 python3-lgpio
-pip install lgpio
+pip install -e ".[dev]"
 ```
 
 ## 3. Configure API keys
@@ -65,16 +65,17 @@ Fill in your OpenWeatherMap API key and Discord webhook URL.
 ### Mock mode (for testing, no DHT22 needed)
 
 ```bash
-source venv/bin/activate
-python3 main.py
+source .venv/bin/activate
+USE_MOCK_SENSOR=true python3 main.py
 ```
 
 ### Real mode with DHT22
 
-Must run as root (GPIO access):
+Set `USE_MOCK_SENSOR=false` in `.env` (the default). Must run as root
+(GPIO access):
 
 ```bash
-sudo /path/to/venv/bin/python3 main.py
+sudo /path/to/.venv/bin/python3 main.py
 ```
 
 Or use systemd (recommended):
@@ -82,7 +83,7 @@ Or use systemd (recommended):
 ```bash
 sudo systemctl start temp-monitor
 sudo systemctl status temp-monitor
-tail -f /path/to/project/temp_monitor.log
+tail -f /tmp/pi-thermostat-alert.log   # or your LOG_FILE
 ```
 
 To stop:
@@ -104,7 +105,7 @@ After=network.target
 Type=simple
 User=pi
 WorkingDirectory=/path/to/pi-thermostat-alert
-ExecStart=/path/to/pi-thermostat-alert/venv/bin/python3 /path/to/pi-thermostat-alert/main.py
+ExecStart=/path/to/pi-thermostat-alert/.venv/bin/python3 /path/to/pi-thermostat-alert/main.py
 Restart=always
 RestartSec=10
 
@@ -137,7 +138,7 @@ Make sure pins are firmly inserted.
 
 ## Troubleshooting
 
-**"DHT sensor not found"**: Check wiring, try a different GPIO pin, or update DHT22_PIN in config.py.
+**"DHT sensor not found"**: Check wiring, try a different GPIO pin, or set `DHT22_PIN` in `.env`.
 
 **Permission denied on GPIO**: Run with sudo or add user to gpio group.
 
