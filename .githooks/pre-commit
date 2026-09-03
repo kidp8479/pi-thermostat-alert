@@ -1,0 +1,14 @@
+#!/bin/sh
+# Enabled by `make install` (git config core.hooksPath .githooks).
+# Blocks the commit if the tree is not formatted/linted - fix with
+# `make format` / `make lint` and re-commit.
+
+set -e
+
+echo "pre-commit: ruff format --check"
+make format-check
+
+echo "pre-commit: ruff check"
+make lint-check
+
+echo "pre-commit: OK"
