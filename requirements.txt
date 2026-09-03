@@ -1,4 +1,0 @@
-requests>=2.28.0
-Adafruit-Circuitpython-DHT>=3.7.0
-python-dotenv>=0.20.0
-lgpio>=0.2.0
