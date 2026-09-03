@@ -31,6 +31,7 @@ All runtime config comes from the environment (`.env`); see
 | `USE_MOCK_SENSOR` | `false` | Run with fixed mock readings, no hardware |
 | `DHT22_PIN` | `D17` | Blinka board pin name for the sensor data line |
 | `CHECK_INTERVAL` | `600` | Seconds between checks |
+| `ALERT_MARGIN_C` | `0.5` | Gap (°C) needed before the alert flips open↔close (deadband) |
 | `LOG_FILE` | `/tmp/pi-thermostat-alert.log` | Log file path |
 
 ## Development

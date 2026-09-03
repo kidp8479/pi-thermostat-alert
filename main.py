@@ -4,7 +4,7 @@ import logging
 import time
 
 from alerter import DiscordAlerter
-from config import CHECK_INTERVAL, LOG_FILE, USE_MOCK_SENSOR
+from config import ALERT_MARGIN_C, CHECK_INTERVAL, LOG_FILE, USE_MOCK_SENSOR
 from sensors import TemperatureSensor
 from weather import WeatherFetcher
 
@@ -51,14 +51,14 @@ class TemperatureMonitor:
             difference,
         )
 
-        # Open windows when outdoor < indoor (cooler outside)
-        if outdoor_temp < indoor_temp and self.last_state != "open":
+        # Flip state only once the gap clears the deadband, so a temperature
+        # hovering around the crossover does not spam open<->close alerts.
+        if difference <= -ALERT_MARGIN_C and self.last_state != "open":
             logger.warning("OPEN: outdoor %.1f°C < indoor %.1f°C", outdoor_temp, indoor_temp)
             self.alerter.send_alert(indoor_temp, outdoor_temp, difference, "open")
             self.last_state = "open"
 
-        # Close windows when outdoor > indoor (hotter outside)
-        elif outdoor_temp > indoor_temp and self.last_state != "close":
+        elif difference >= ALERT_MARGIN_C and self.last_state != "close":
             logger.warning("CLOSE: outdoor %.1f°C > indoor %.1f°C", outdoor_temp, indoor_temp)
             self.alerter.send_alert(indoor_temp, outdoor_temp, difference, "close")
             self.last_state = "close"
