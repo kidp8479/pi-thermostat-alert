@@ -1,6 +1,7 @@
-import board
-import adafruit_dht
 import time
+
+import adafruit_dht
+import board
 
 print(f"Testing GPIO17: {board.D17}")
 print("Initializing DHT22...")
