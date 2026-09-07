@@ -12,7 +12,7 @@ class TemperatureSensor:
     """DHT22 reader. With use_mock=True it returns a fixed reading and needs
     neither hardware nor the Blinka stack (which only installs on the Pi)."""
 
-    def __init__(self, use_mock=False):
+    def __init__(self, use_mock: bool = False) -> None:
         self.use_mock = use_mock
         self._dht = None
         self._last_read_time = 0.0
@@ -24,7 +24,7 @@ class TemperatureSensor:
 
             self._dht = adafruit_dht.DHT22(getattr(board, DHT22_PIN))
 
-    def read(self):
+    def read(self) -> dict[str, float] | None:
         """Return {"temperature", "humidity"} in Celsius / %, or None on failure."""
         if self.use_mock:
             return dict(MOCK_READING)
@@ -47,6 +47,6 @@ class TemperatureSensor:
         self._last_read_time = time.time()
         return {"temperature": temperature, "humidity": humidity}
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         if self._dht is not None:
             self._dht.exit()

@@ -8,10 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class WeatherFetcher:
-    def __init__(self):
+    def __init__(self) -> None:
         self.api_url = "https://api.openweathermap.org/data/2.5/weather"
 
-    def fetch_outdoor_temp(self):
+    def fetch_outdoor_temp(self) -> dict[str, float] | None:
         """Fetch current outdoor temperature from OpenWeatherMap"""
         try:
             params = {
