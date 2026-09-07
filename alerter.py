@@ -16,15 +16,21 @@ MODES = {
 }
 
 
-def _field(name, value, inline=True):
+def _field(name: str, value: str, inline: bool = True) -> dict[str, object]:
     return {"name": name, "value": value, "inline": inline}
 
 
 class DiscordAlerter:
-    def __init__(self):
+    def __init__(self) -> None:
         self.webhook_url = DISCORD_WEBHOOK_URL
 
-    def send_alert(self, indoor_temp, outdoor_temp, difference, mode):
+    def send_alert(
+        self,
+        indoor_temp: float,
+        outdoor_temp: float,
+        difference: float,
+        mode: str,
+    ) -> bool:
         """Send alert: mode = 'open' (cooler outside) or 'close' (hotter outside)"""
         if not self.webhook_url:
             logger.warning("Discord webhook URL not configured")

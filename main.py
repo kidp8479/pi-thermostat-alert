@@ -20,7 +20,13 @@ logger = logging.getLogger(__name__)
 
 
 class TemperatureMonitor:
-    def __init__(self, use_mock_sensor=USE_MOCK_SENSOR, sensor=None, weather=None, alerter=None):
+    def __init__(
+        self,
+        use_mock_sensor: bool = USE_MOCK_SENSOR,
+        sensor: TemperatureSensor | None = None,
+        weather: WeatherFetcher | None = None,
+        alerter: DiscordAlerter | None = None,
+    ) -> None:
         # Collaborators are injectable for tests; production passes nothing.
         self.sensor = sensor or TemperatureSensor(use_mock=use_mock_sensor)
         self.weather = weather or WeatherFetcher()
@@ -28,7 +34,7 @@ class TemperatureMonitor:
         # Track state to avoid duplicate alerts: "open", "close", or None
         self.last_state = None
 
-    def check_temperatures(self):
+    def check_temperatures(self) -> bool:
         """Read temps and trigger alerts on state change"""
         indoor_data = self.sensor.read()
         if not indoor_data:
@@ -65,7 +71,7 @@ class TemperatureMonitor:
 
         return True
 
-    def run(self):
+    def run(self) -> None:
         """Main loop: check temperatures at regular intervals"""
         logger.info("Temperature monitor started (interval=%ss)", CHECK_INTERVAL)
 

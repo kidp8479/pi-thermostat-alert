@@ -7,16 +7,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def _env_bool(name, default):
+def _env_bool(name: str, default: bool) -> bool:
     return os.getenv(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _env_int(name, default):
+def _env_int(name: str, default: int) -> int:
     raw = os.getenv(name)
     return int(raw) if raw else default
 
 
-def _env_float(name, default):
+def _env_float(name: str, default: float) -> float:
     raw = os.getenv(name)
     return float(raw) if raw else default
 
